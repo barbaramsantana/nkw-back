@@ -15,6 +15,15 @@ router.get('/', async (req, res)=>{
     }
 });
 
+router.get('/favoritos', async (req, res)=>{
+    try {
+        const desejos = await Desejos.find({user: req.userId, favorito: 1}).populate('user');
+        return res.send({desejos});
+    } catch (error) {
+        return res.status(400).send({error: 'Erro na listagem dos desejos'});
+    }
+});
+
 router.get('/todosdesejos', async (req, res)=>{
     try {
         const desejos = await Desejos.find().populate('user');

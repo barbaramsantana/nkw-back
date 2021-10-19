@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -17,4 +18,4 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 require('./controllers/authControllers')(app);
 require('./controllers/projectControllers')(app);
-app.listen(9000);
+app.listen(process.env.PORT || 9000);
