@@ -1,15 +1,23 @@
 const express = require('express');
-//error
-//const authMiddleware = require('../middlewares/auth');
+const authMiddleware = require('../middlewares/auth');
 
 const Desejos = require('../models/desejos');
 const router = express.Router();
 
-//router.use(authMiddleware);
+router.use(authMiddleware);
 
 router.get('/', async (req, res)=>{
     try {
-        const desejos = await Desejos.find();
+        const desejos = await Desejos.find({user: req.userId}).populate('user');
+        return res.send({desejos});
+    } catch (error) {
+        return res.status(400).send({error: 'Erro na listagem dos desejos'});
+    }
+});
+
+router.get('/todosdesejos', async (req, res)=>{
+    try {
+        const desejos = await Desejos.find().populate('user');
         return res.send({desejos});
     } catch (error) {
         return res.status(400).send({error: 'Erro na listagem dos desejos'});
@@ -31,6 +39,19 @@ router.post('/', async (req, res)=>{
         return res.send({desejo});
     } catch (err) {
         return res.status(400).send({error: 'Erro criando novo desejo'});
+    }
+});
+
+router.put('/favorito/:desejoId', async (req, res)=>{
+    try {
+        const {favorito} = req.body;
+        if(favorito != 1 && favorito != 0){
+                return res.status(400).send({error: 'Erro ao favoritar desejo'});
+        }
+        const desejo = await Desejos.findByIdAndUpdate(req.params.desejoId,{...req.body}, {new: true});
+        return res.send({desejo});
+    } catch (err) {
+        return res.status(400).send({error: 'Erro ao favoritar desejo'});
     }
 });
 
